@@ -36,6 +36,13 @@ android {
         targetSdk = project.libs.versions.app.build.targetSDK.get().toInt()
         versionName = project.property("VERSION_NAME").toString()
         versionCode = project.property("VERSION_CODE").toString().toInt()
+
+        // optional, e.g. -PABI_FILTER=arm64-v8a builds an APK that contains only the native libraries of that ABI
+        providers.gradleProperty("ABI_FILTER").orNull?.let { abis ->
+            ndk {
+                abiFilters += abis.split(",").map { it.trim() }.filter { it.isNotEmpty() }
+            }
+        }
     }
 
     signingConfigs {

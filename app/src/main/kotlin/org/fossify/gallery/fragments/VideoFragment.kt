@@ -123,6 +123,7 @@ class VideoFragment : ViewPagerFragment(), TextureView.SurfaceTextureListener,
     private var mVideoSurfaceTexture: SurfaceTexture? = null
     private var mVideoSize = Point(1, 1)
     private var mVideoRotation = 0
+    private var mIsVideoSizeFromPlayer = false
     private var mTimerHandler = Handler()
 
     private var mStoredShowExtendedDetails = false
@@ -294,10 +295,18 @@ class VideoFragment : ViewPagerFragment(), TextureView.SurfaceTextureListener,
         initTimeHolder()
         // checkIfPanorama() TODO: Implement panorama using a FOSS library
 
+        // The size of the video view is calculated from mVideoSize, which starts as a 1:1 placeholder. Apply the real
+        // size as soon as it is known, otherwise the first frame is shown in a wrong sized view and jumps to the right
+        // size a moment after the playback started, which looked like a flash (only on videos that are not square).
         ensureBackgroundThread {
-            activity.getVideoResolution(mMedium.path)?.apply {
-                mVideoSize.x = x
-                mVideoSize.y = y
+            activity.getVideoResolution(mMedium.path)?.let { resolution ->
+                activity.runOnUiThread {
+                    if (isAdded && !mIsVideoSizeFromPlayer && resolution.x > 0 && resolution.y > 0) {
+                        mVideoSize.x = resolution.x
+                        mVideoSize.y = resolution.y
+                        setVideoSize()
+                    }
+                }
             }
         }
 
@@ -567,9 +576,21 @@ class VideoFragment : ViewPagerFragment(), TextureView.SurfaceTextureListener,
             }
 
             override fun onVideoSizeChanged(videoSize: VideoSize) {
-                mVideoSize.x = videoSize.width
-                mVideoSize.y = (videoSize.height / videoSize.pixelWidthHeightRatio).toInt()
-                setVideoSize()
+                if (videoSize.width <= 0 || videoSize.height <= 0) {
+                    return
+                }
+
+                val newWidth = videoSize.width
+                val newHeight = (videoSize.height / videoSize.pixelWidthHeightRatio).toInt()
+                val isChanged = newWidth != mVideoSize.x || newHeight != mVideoSize.y
+                mVideoSize.x = newWidth
+                mVideoSize.y = newHeight
+                mIsVideoSizeFromPlayer = true
+
+                // no need to lay the view out again when it already has the right size
+                if (isChanged) {
+                    setVideoSize()
+                }
             }
 
             override fun onPlayerErrorChanged(error: PlaybackException?) {
