@@ -1,3 +1,17 @@
+修复如下 
+v1：
+1.修复滑动后照片饱和度突然变化问题；
+2.修复删除导致的闪烁问题；
+3.修复连续删除导致的黑屏问题；
+4.优化启动视频速度；
+
+v2：
+1.修复视频播放闪屏问题；
+2.增加旋转功能，旋转画面而不是旋转屏幕，功能集成在底部按钮里
+
+
+
+
 # Fossify Gallery
 
 <img alt="Logo" src="graphics/icon.webp" width="120" />
@@ -27,10 +41,6 @@ JPEG, JPEG XL, PNG, MP4, MKV, RAW, SVG, GIF, AVIF, videos, and more – we've go
 **✨ MATERIAL DESIGN WITH DYNAMIC THEMES:**  
 Experience the beauty of intuitive material design with dynamic themes. Want more? Dive into custom themes and make your gallery truly unique.
 
-➡️ Explore more Fossify apps: https://www.fossify.org<br>
-➡️ Open-Source Code: https://www.github.com/FossifyOrg<br>
-➡️ Join the community on Reddit: https://www.reddit.com/r/Fossify<br>
-➡️ Connect on Telegram: https://t.me/Fossify
 
 <div align="center">
 <img alt="App image" src="fastlane/metadata/android/en-US/images/phoneScreenshots/1_en-US.png" width="30%">
